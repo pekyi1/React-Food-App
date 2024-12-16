@@ -1,28 +1,23 @@
 import express from "express"
 import { addFood } from "../controllers/foodController.js"
-import multer from "multer"
 
 const foodRouter = express.Router();
 
-
-//Image Storage Engine
-const storage = multer.diskStorage({
-    destination:"upload",
-    filename:(req,file,cb)=>{
-        return cb(null,`${Date.now()}${file.originalname}`)
+foodRouter.post("/add", (req, res) => {
+    console.log("Request received"); // Debug log
+    console.log("Request body:", req.body); // Debug log
+    
+    // Validate required fields
+    const { name, description, price, category } = req.body;
+    if (!name || !description || !price || !category) {
+        return res.status(400).json({
+            success: false,
+            message: "Missing required fields",
+            received: req.body
+        });
     }
-})
-
-const upload = multer({storage:storage})
-
-foodRouter.post("/add",upload.single("image"),addFood)
-
-
-
-
-
-
-
-
+    
+    addFood(req, res);
+});
 
 export default foodRouter;
